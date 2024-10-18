@@ -1,8 +1,8 @@
 "use client"
 import React, { useState } from "react"
-import AddFoodItem from "@/app/_components/AddFoodItem"
-import RestaurantHeader from "@/app/_components/RestaurantHeader"
-import FoodItemList from "@/app/_components/FoodItemList"
+import AddFoodItem from "../../_components/AddFoodItem"
+import RestaurantHeader from "../../_components/RestaurantHeader"
+import FoodItemList from "../../_components/FoodItemList"
 
 const Dashboard=()=>{
     const [addItem,setAddItem]=useState(false)

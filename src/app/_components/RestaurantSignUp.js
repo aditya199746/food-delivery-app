@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation"
 import React, {useState} from "react"
 
-const restaurantSignUp=()=>{
+const RestaurantSignUp=()=>{
     const [formData,setFormData]=useState({})
     const [cPass,setCPass]=useState("")
     const router= useRouter()
@@ -55,4 +55,4 @@ const restaurantSignUp=()=>{
     )
 }
 
-export default restaurantSignUp
+export default RestaurantSignUp
