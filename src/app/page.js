@@ -1,95 +1,82 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client"
+import { useEffect, useState } from "react";
+import CustomerHeader from "./_components/CustomerHeader";
+import Footer from "./_components/Footer";
+import Restaurant from "./restaurant/page"
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [location,setLocation]=useState([])
+  const [selectedLocation,setSelectedLocation]=useState("")
+  const [showLocation,setShowLocation]=useState(false)
+  const[restaurants,setRestaurants]=useState([])
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  const router=useRouter()
+  const loadLocations=async ()=>{
+    let response=await fetch("http://localhost:3000/api/customer/locations")
+    response=await response.json()
+    if(response.success){
+      setLocation(response.result)
+    }
+  }
+
+  const loadRestaurants=async (params)=>{
+    let url="http://localhost:3000/api/customer"
+    if(params?.location){
+      url=`http://localhost:3000/api/customer?location=${params.location}`
+    } else if(params?.restaurant){
+      url=`http://localhost:3000/api/customer?restaurant=${params.restaurant}`
+    }
+    let response=await fetch(url)
+    response=await response.json()
+    if(response.success){
+      setRestaurants(response.result)
+    }
+  }
+  useEffect(()=>{
+    loadLocations()
+    loadRestaurants()
+  },[])
+
+  const handleListItem=(loc)=>{
+    setSelectedLocation(loc)
+    setShowLocation(false)
+    loadRestaurants({location:loc})
+  }
+
+  return (
+      <main>
+        <CustomerHeader />
+        
+        {/* <Restaurant /> */}
+        <div>
+          <h1>Food delivey</h1>
+          <div>
+            <input type="text" placeholder="select Place" value={selectedLocation} onClick={()=>setShowLocation(true)} />
+            <ul>
+              {
+                showLocation&& location.map((loc)=>{
+                 return <li onClick={()=>handleListItem(loc)}>{loc}</li>
+                })
+              }
+            </ul>
+            <input type="text" placeholder="Enter Food or Restaurant name" onChange={(e)=>loadRestaurants({restaurant:e.target.value})} />
+          </div>
         </div>
+        <div>
+        {
+          restaurants.map((item)=>{
+            return <div onClick={()=>router.push("explore/"+item.resName+"?id="+item._id)}>
+              <h3>{item.resName}</h3>
+              <h4>Contact: {item.phone}</h4>
+              <div>City: {item.city}</div>
+              <div>Address: {item.address}</div>
+              <div>Email: {item.email}</div>
+            </div>
+          })
+        }
+        </div>
+        <Footer />
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
   );
 }
