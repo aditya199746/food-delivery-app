@@ -9,7 +9,7 @@ export async function GET() {
     return NextResponse.json({ result: data })
 }
 
-export async function POST(req) {
+export async function POST(req)  {
     let payload = await req.json()
     let result;
     let success=false
