@@ -1,15 +1,20 @@
 "use client"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter,usePathname } from "next/navigation"
+import Image from "next/image"
 
 
 const RestaurantHeader = () => {
     const [details, setDetails] = useState()
     const router = useRouter()
     const pathName=usePathname()
+    const hasFetched=useRef()
     useEffect(() => {
-        let data = localStorage.getItem("restaurantUser")
+        if (typeof window !== "undefined") {
+        if(hasFetched.current) return;
+        hasFetched.current=true
+        let data =localStorage.getItem("restaurantUser")&& localStorage.getItem("restaurantUser")
         if (!data && pathName=="/restaurant/dashboard") {
             router.push("/restaurant")
         } else if(data && pathName==="/restaurant"){
@@ -17,7 +22,7 @@ const RestaurantHeader = () => {
         }
          else {
             setDetails(JSON.parse(data))
-        }
+        }}
     },[])
     const handleLogout=()=>{
         localStorage.removeItem("restaurantUser")
@@ -26,7 +31,7 @@ const RestaurantHeader = () => {
     return (
         <div>
             <div className="logo">
-                <img src="" alt="RestaurantHeader logo" />
+                <img src="" alt="RestaurantHeader logo" width={200} />
             </div>
             <ul>
                 <li>

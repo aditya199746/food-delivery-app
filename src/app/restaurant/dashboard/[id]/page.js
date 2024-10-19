@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from "next/navigation"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 const EditFoodItems
 =(props)=>{
     const route=useRouter()
@@ -9,6 +9,7 @@ const EditFoodItems
     const [path,setPath]=useState("")
     const [description,setDescription]=useState("")
     const [error,setError]=useState(false)
+    const hasFetched=useRef()
 
     const handleEditFoodItem=async ()=>{
         if(!name || !path || !price || !description){
@@ -43,6 +44,8 @@ const EditFoodItems
     }
 
     useEffect(()=>{
+        if(hasFetched.current) return;
+    hasFetched.current=true
         handleLoadFoodItem()
     },[])
     return (

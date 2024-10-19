@@ -1,70 +1,97 @@
-"use client"
-import { useState } from "react";
-import CustomerHeader from "../_components/CustomerHeader"
-import Footer from "../_components/Footer"
+"use client";
+import { useEffect, useState } from "react";
+import CustomerHeader from "../_components/CustomerHeader";
+import Footer from "../_components/Footer";
 import { Delivery_CHARGES, TAX } from "../lib/constant";
 import { useRouter } from "next/navigation";
-const Page=()=>{
-    const [cartStorage,setCartStorage]=useState(JSON.parse(localStorage?.getItem('cart')))
-    const [total]=useState(()=>cartStorage.length===1?cartStorage[0].price:
-    cartStorage.reduce((a,b)=>{
-        return a.price+b.price
-    })
- )
- const router=useRouter()
 
- const orderNow=()=>{
-    if(JSON.parse(localStorage.getItem("user"))){
-        router.push("/order")
-    }
-    else{
-        router.push("/user-auth?order=true")
-    }
-    
- }
-    return <div>
-        <CustomerHeader />
-        <div>
-            {
-               cartStorage?.length> 0 ? cartStorage?.map((item,key)=>(
-                    <div key={key}>
-                        <div>{item.name}</div>
-                        <div>{item.price}</div>
-                        <div>{item.description}</div>
-                        <img src={item.imgPath} />
-                        {
-                         <button onClick={()=>handleRemoveCart(item._id)} >Remove from cart</button>
-                            
-                        }
-                        
-                        
-                    </div>
-                ))
-                : <h1>No Food items for now</h1>
+const Page = () => {
+    const [cartStorage, setCartStorage] = useState([]);
+    const [total, setTotal] = useState(0);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            // Access localStorage only in the browser
+            const storedCart = localStorage.getItem("cart")
+                ? JSON.parse(localStorage.getItem("cart"))
+                : [];
+            setCartStorage(storedCart);
+
+            // Calculate the total price
+            if (storedCart.length === 1) {
+                setTotal(storedCart[0].price);
+            } else if (storedCart.length > 1) {
+                const totalPrice = storedCart.reduce((a, b) => {
+                    return a.price + b.price;
+                });
+                setTotal(totalPrice);
             }
-        </div>
+        }
+    }, []);
+
+    const orderNow = () => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            router.push("/order");
+        } else {
+            router.push("/user-auth?order=true");
+        }
+    };
+
+    const handleRemoveCart = (id) => {
+        const updatedCart = cartStorage.filter((item) => item._id !== id);
+        setCartStorage(updatedCart);
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+        if (updatedCart.length === 0) {
+            localStorage.removeItem("cart");
+        }
+    };
+
+    return (
         <div>
+            <CustomerHeader />
             <div>
-                <span>Food Charges: </span>
-                <span>{total}</span>
+                {cartStorage.length > 0 ? (
+                    cartStorage.map((item, key) => (
+                        <div key={key}>
+                            <div>{item.name}</div>
+                            <div>{item.price}</div>
+                            <div>{item.description}</div>
+                            <img src="" alt="img5" />
+                            <button onClick={() => handleRemoveCart(item._id)}>
+                                Remove from cart
+                            </button>
+                        </div>
+                    ))
+                ) : (
+                    <h1>No Food items for now</h1>
+                )}
             </div>
             <div>
-                <span>Tax: </span>
-                <span>{(total*TAX)/100}</span>
+                <div>
+                    <span>Food Charges: </span>
+                    <span>{total}</span>
+                </div>
+                <div>
+                    <span>Tax: </span>
+                    <span>{(total * TAX) / 100}</span>
+                </div>
+                <div>
+                    <span>Delivery Charges: </span>
+                    <span>{Delivery_CHARGES}</span>
+                </div>
+                <div>
+                    <span>Total Amount: </span>
+                    <span>{total + (total * TAX) / 100 + Delivery_CHARGES}</span>
+                </div>
             </div>
             <div>
-                <span>Delivery Charges: </span>
-                <span>{Delivery_CHARGES}</span>
+                <button onClick={orderNow}>Order Now</button>
             </div>
-            <div>
-                <span>Total Amount: </span>
-                <span>{total+((total*TAX)/100)+Delivery_CHARGES}</span>
-            </div>
+            <Footer />
         </div>
-        <div>
-            <button onClick={orderNow}>Order Now</button>
-        </div>
-        <Footer />
-    </div>
+    );
 };
-export default Page
+
+export default Page;

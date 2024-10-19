@@ -14,10 +14,14 @@ const AddFoodItem=(props)=>{
         else{
             setError(false)
         }
-        const resData=JSON.parse(localStorage.getItem("restaurantUser"))
         let resto_id
-        if(resData){
-            resto_id=resData._id
+
+        // Ensure localStorage is only accessed in the browser
+        if (typeof window !== "undefined") {
+            const resData = localStorage.getItem("restaurantUser") ? JSON.parse(localStorage.getItem("restaurantUser")) : {}
+            if (resData) {
+                resto_id = resData._id
+            }
         }
         let response=await fetch("http://localhost:3000/api/restaurant/foods",{
             method:"POST",

@@ -8,29 +8,34 @@ const router=useRouter()
 const [myOrders,setMyOrders]=useState([])
 
     const getMyOrders=async ()=>{
-        const deliveryData=JSON.parse(localStorage.getItem("delivery"))
+        if (typeof window !== "undefined") {
+        const deliveryData=localStorage.getItem("delivery")&&JSON.parse(localStorage.getItem("delivery"))
         let response=await fetch("http://localhost:3000/api/deliverypartners/orders/"+deliveryData._id)
         response=await response.json()
         if(response.success){
             setMyOrders(response.result)
         }
     }
+    }
 
     useEffect(()=>{
-        getMyOrders()
-    },[])
-    useEffect(()=>{
-        const delvery=JSON.parse(localStorage.getItem("delivery"))
-        if(!delvery){
-            router.push("/deliverydashboard")
+        if (typeof window !== "undefined") {
+        const delvery=localStorage.getItem("delivery")&&JSON.parse(localStorage.getItem("delivery"))
+            if(!delvery){
+                router.push("/deliverydashboard")
+            }
+            else{
+                getMyOrders()
+            }
         }
     },[])
+
     return <div>
         <DeliveryHeader />
         <h1>My Order List</h1>
         {
             myOrders.map((item)=>(
-                <div>
+                <div key={`${item.name}_key`}>
                     <h4>{item.data.name}</h4>
                     <div>Amount: {item.amount}</div>
                     <div>Address: {item.data.address}</div>

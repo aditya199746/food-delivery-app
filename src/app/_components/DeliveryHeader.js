@@ -7,7 +7,7 @@ const DeliveryHeader = (props) => {
     
     return <div>
         <div>
-            <img />
+            <img src="" alt="img2" />
         </div>
         <ul>
             <li>

@@ -4,7 +4,8 @@ const FoodItemList = () => {
     const route =useRouter()
     const [items, setItems] = useState([])
     const loadFoodItems = async () => {
-        const resData=JSON.parse(localStorage.getItem("restaurantUser"))
+        if (typeof window !== "undefined") {
+        const resData=localStorage.getItem("restaurantUser") && JSON.parse(localStorage.getItem("restaurantUser"))
         let response = await fetch(`http://localhost:3000/api/restaurant/foods/${resData._id}`)
         response = await response.json()
         if (response.success) {
@@ -13,6 +14,7 @@ const FoodItemList = () => {
         else {
             alert("No food items from DB")
         }
+    }
     }
     useEffect(() => {
         loadFoodItems()
@@ -51,7 +53,7 @@ const FoodItemList = () => {
                                 <td>{item.name}</td>
                                 <td>{item.price}</td>
                                 <td>{item.description}</td>
-                                <td><img src={item.imgPath} style={{width:"50px"}} /></td>
+                                <td><img src="" style={{width:"50px"}} alt="img3" /></td>
                                 <td>
                                     <button onClick={()=>handleDelete(item._id)}>Delete</button>
                                     <button onClick={()=>route.push(`dashboard/${item._id}`)}>Edit</button>

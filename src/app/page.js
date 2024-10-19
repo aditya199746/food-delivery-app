@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomerHeader from "./_components/CustomerHeader";
 import Footer from "./_components/Footer";
 import Restaurant from "./restaurant/page"
@@ -10,6 +10,7 @@ export default function Home() {
   const [selectedLocation,setSelectedLocation]=useState("")
   const [showLocation,setShowLocation]=useState(false)
   const[restaurants,setRestaurants]=useState([])
+  const hasFetched = useRef()
 
   const router=useRouter()
   const loadLocations=async ()=>{
@@ -34,6 +35,8 @@ export default function Home() {
     }
   }
   useEffect(()=>{
+    if(hasFetched.current) return;
+    hasFetched.current=true
     loadLocations()
     loadRestaurants()
   },[])
@@ -52,11 +55,11 @@ export default function Home() {
         <div>
           <h1>Food delivey</h1>
           <div>
-            <input type="text" placeholder="select Place" value={selectedLocation} onClick={()=>setShowLocation(true)} />
+            <input type="text" placeholder="select Place"defaultValue={selectedLocation} onClick={()=>setShowLocation(true)} />
             <ul>
               {
-                showLocation&& location.map((loc)=>{
-                 return <li onClick={()=>handleListItem(loc)}>{loc}</li>
+                showLocation&& location.map((loc,idx)=>{
+                 return <li onClick={()=>handleListItem(loc)} key={idx}>{loc}</li>
                 })
               }
             </ul>
@@ -66,7 +69,7 @@ export default function Home() {
         <div>
         {
           restaurants.map((item)=>{
-            return <div onClick={()=>router.push("explore/"+item.resName+"?id="+item._id)}>
+            return <div onClick={()=>router.push("explore/"+item.resName+"?id="+item._id)} key={item._id}>
               <h3>{item.resName}</h3>
               <h4>Contact: {item.phone}</h4>
               <div>City: {item.city}</div>

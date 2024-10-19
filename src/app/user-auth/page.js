@@ -10,9 +10,9 @@ const UserAuth=(props)=>{
         <CustomerHeader />
         <h1>{login? "User Login":'User SignUp'}</h1>
         {login?<UserLogin redirect={props.searchParams} />:<UserSignUp redirect={props.searchParams} /> }
-        <buton onClick={()=>setLogin(!login)}>
+        <button onClick={()=>setLogin(!login)}>
             {login ? "Do not have account ? SignUp":"already have account? Login"}
-        </buton>
+        </button>
         
         <Footer />
     </div>

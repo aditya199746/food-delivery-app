@@ -1,6 +1,6 @@
 
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import DeliveryHeader from "../_components/DeliveryHeader"
 import { useRouter } from "next/navigation"
 
@@ -15,12 +15,17 @@ const DeliveryPartner = () => {
     const [address, setAddress] = useState("")
     const [mobile, setMobile] = useState("")
     const router=useRouter()
+    const hasFetched=useRef()
 
     useEffect(()=>{
-        const delvery=JSON.parse(localStorage.getItem("delivery"))
+        if (typeof window !== "undefined") {
+        if(hasFetched.current) return;
+    hasFetched.current=true
+        const delvery=localStorage.getItem("delivery")&&JSON.parse(localStorage.getItem("delivery"))
         if(delvery){
             router.push("/deliverydashboard")
         }
+    }
     },[])
 
     const handleSignUp=async ()=>{
