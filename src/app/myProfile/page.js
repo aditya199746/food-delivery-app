@@ -4,7 +4,7 @@ import CustomerHeader from "../_components/CustomerHeader"
 import Footer from "../_components/Footer"
 
 const MyProfile=()=>{
-    const [myOrders,setMyOrders]=useState([])
+    const [myOrders,setMyOrders]= useState([])
     const hasFetched=useRef()
 
     const getMyOrders=async ()=>{
